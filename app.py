@@ -30,8 +30,14 @@ def add_features(data: pd.DataFrame) -> pd.DataFrame:
 try:
     preprocessor, model = load_artifacts()
 except FileNotFoundError:
-    st.error("Model files not found. Run the 'save model' cell in the notebook and put "
-             "`preprocessor.joblib` and `model.joblib` inside the `model/` folder.")
+    st.error("Model files not found. Details below help find the problem.")
+    st.write("Looking for the model in:", str(MODEL_DIR))
+    st.write("`model/` folder exists:", MODEL_DIR.exists())
+    st.write("Files in model/:", [f.name for f in MODEL_DIR.iterdir()] if MODEL_DIR.exists() else [])
+    st.write("Files next to app.py:", sorted(f.name for f in MODEL_DIR.parent.iterdir()))
+    st.stop()
+except Exception as e:  # e.g. scikit-learn version mismatch
+    st.error(f"The model files were found but could not be loaded: {type(e).__name__}: {e}")
     st.stop()
 
 # ---------- Header ----------
